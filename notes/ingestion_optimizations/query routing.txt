@@ -1,0 +1,20 @@
+                 USER QUERY
+                     ↓
+                   Router
+                     ↓
+      ┌──────────────┼──────────────┐
+      ↓              ↓              ↓
+    simple         difficult     multi-intent
+      ↓              ↓              ↓
+   Hybrid       selected query    Decompose
+   search        strategies          ↓
+      │              │          route each
+      └──────────────┴──────────────┘
+                     ↓
+                    RRF
+                     ↓
+                  Reranker
+                     ↓
+             Group by lecture
+                     ↓
+                   Answer

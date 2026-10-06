@@ -1,0 +1,113 @@
+Basic RAG
+query
+ ↓
+retrieve
+ ↓
+answer
+versus:
+CRAG
+query
+ ↓
+retrieve
+ ↓
+grade retrieval
+ ↓
+good enough?
+ ├─ yes → answer
+ └─ no  → correct query / retry retrieval
+
+ For our project, the failure case is easy to imagine.
+User asks:
+"Where is Redis caching taught?"
+
+But Redis is not in the course.
+Qdrant will still return the nearest vectors. Elasticsearch may still return weak keyword matches. A reranker can still say:
+best among these = chunk A
+
+The CRAG grader asks something like:
+Query:
+"Where is Redis caching taught?"
+
+Retrieved passage:
+"This lecture explains React Native data fetching..."
+
+Does this passage genuinely contain information that answers the query?
+and maybe returns:
+score = 2/10
+
+
+
+Then we do not answer yet.
+We retry with a correction strategy.
+For us, that could be:
+attempt 1
+router-driven retrieval
+ ↓
+grader says poor
+ ↓
+attempt 2
+force rewrite + HyDE + broader retrieval
+ ↓
+grader again
+ ↓
+still poor
+ ↓
+stop
+ ↓
+"Could not find this topic in the course."
+
+The important distinction from reranking is:
+Reranker:
+A > B > C
+
+CRAG grader:
+A is only 3/10, so even the best result is not good enough.
+
+That is why we need both.
+
+
+query
+  ↓
+normal routed retrieval
+  ↓
+grade retrieval
+  ↓
+sufficient?
+  ├─ yes → return results
+  │
+  └─ no
+       ↓
+    corrective retrieval
+       ↓
+    grade again
+       ↓
+    still bad?
+       ├─ retry, up to maxRetries
+       └─ stop and mark insufficient
+
+
+
+       User query
+   ↓
+router-driven retrieval
+   ↓
+CRAG grader
+   ↓
+good enough?
+ ├── yes
+ │    ↓
+ │  reranker
+ │    ↓
+ │  group by lecture
+ │    ↓
+ │  answer
+ │
+ └── no
+      ↓
+   corrective retrieval
+      ↓
+   grade again
+      ↓
+   max retries reached?
+      ├── no → retry
+      └── yes → "topic not found"

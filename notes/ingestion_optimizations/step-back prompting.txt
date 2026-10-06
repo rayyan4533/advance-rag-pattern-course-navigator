@@ -1,0 +1,108 @@
+What Step-Back does
+Query rewriting keeps roughly the same level of specificity:
+User:
+"where he gets params from url"
+
+Rewrite:
+"getting URL parameters, route parameters and search parameters"
+
+Step-back asks:
+What broader concept is this specific question really about?
+
+Example:
+User:
+"why does useLocalSearchParams give me values from the URL?"
+
+Step-back:
+"route parameters and dynamic routing in Expo Router"
+
+So:
+Rewrite
+→ better wording
+
+Step-back
+→ broader underlying concept
+
+
+                     User Query
+                         │
+            ┌────────────┼────────────┐
+            │            │            │
+            ▼            ▼            ▼
+        original       rewrite     step-back
+            │            │            │
+            ▼            ▼            ▼
+       hybridSearch  hybridSearch  hybridSearch
+            │            │            │
+            └────────────┼────────────┘
+                         ▼
+                    final fusion
+                         ▼
+                      reranker
+
+
+
+ Now we're doing fusion at two levels:
+Level 1:
+
+Qdrant + Elasticsearch
+        ↓
+       RRF
+        ↓
+hybrid result for one query
+
+Then:
+Level 2:
+
+original hybrid results
++
+rewritten hybrid results
++
+step-back hybrid results
+        ↓
+       RRF
+        ↓
+combined candidate set
+
+And after that we'll still use:
+reranker
+→ best passage
+
+
+Query rewrite
+→ alternative wording
+
+Step-back
+→ broader concept
+
+Vector search
+→ semantic similarity
+
+BM25
+→ lexical similarity
+
+RRF
+→ combine rankings
+
+Reranker
+→ decide which passages actually answer best
+
+
+User query
+   ↓
+┌──────────────┬──────────────┬──────────────┐
+↓              ↓              ↓
+Original       Rewrite        Step-back
+↓              ↓              ↓
+Hybrid         Hybrid         Hybrid
+search         search         search
+(Qdrant+ES)    (Qdrant+ES)    (Qdrant+ES)
+└──────────────┴──────────────┘
+               ↓
+              RRF
+               ↓
+           Reranker
+               ↓
+       Group by lecture
+               ↓
+             LLM

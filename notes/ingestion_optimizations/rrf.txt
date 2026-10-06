@@ -1,0 +1,134 @@
+                 user query
+                     ↓
+         ┌───────────┴───────────┐
+         ↓                       ↓
+   vector retrieval        keyword retrieval
+         ↓                       ↓
+   ranked list A           ranked list B
+         └───────────┬───────────┘
+                     ↓
+RRF
+                     ↓
+              fused candidates
+                     ↓
+reranker
+                     ↓
+             group by lecture
+                     ↓
+answer
+
+
+Vector search is good for:
+“where does he explain route params?”
+
+Keyword/BM25-style retrieval is better for:
+“where is useLocalSearchParams taught?”
+
+
+
+RRF
+= combine rankings from different retrievers
+
+reranker
+= judge the fused candidates more deeply
+
+src/rag/retrieval/
+├── search-course.ts          // existing vector search
+├── keyword-search.ts         // new
+└── reciprocal-rank-fusion.ts // new
+
+Query: "useLocalSearchParams"
+
+Vector top 10
++
+Keyword top 10
+↓
+RRF
+↓
+reranker
+
+
+                     Query
+                       │
+          ┌────────────┴────────────┐
+          │                         │
+          ▼                         ▼
+      Qdrant                    Elasticsearch
+          |                         |
+   vector search                BM25 search
+          │                         │
+      top 10                    top 10
+          │                         │
+          └────────────┬────────────┘
+                       ▼
+                       RRF
+                       │
+                 fused candidates
+                       │
+                       ▼
+                    reranker
+                       │
+                       ▼
+               group by lecture
+                       │
+                       ▼
+                    answer
+
+
+
+Suppose Qdrant returns:
+QDRANT
+Rank 1 → Chunk A
+Rank 2 → Chunk B
+Rank 3 → Chunk C
+Rank 4 → Chunk D
+
+and Elasticsearch returns:
+ELASTICSEARCH
+Rank 1 → Chunk B
+Rank 2 → Chunk E
+Rank 3 → Chunk A
+Rank 4 → Chunk F
+
+
+RRF score =
+Σ 1 / (k + rank)
+
+Now conceptually:
+Qdrant
+  ↓
+[Document, score]
+  ↓
+normalizeVectorResults()
+  ↓
+RetrievalResult[]
+
+and:
+Elasticsearch
+  ↓
+KeywordSearchResult[]
+  ↓
+normalizeKeywordResults()
+  ↓
+RetrievalResult[]
+
+So both now become:
+{
+  chunkId: "...",
+  lectureId: "...",
+  text: "...",
+  source: "vector" | "keyword",
+  originalScore: ...
+}
+
+That means the next file, reciprocal-rank-fusion.ts, doesn’t care whether a result came from Qdrant or Elasticsearch. It only cares about:
+chunkId
+rank
+
+hat separation is useful because later:
+HyDE
+subqueries
+step-back
+
+
+hybridSearch → RRF → reranker → grouping → generation

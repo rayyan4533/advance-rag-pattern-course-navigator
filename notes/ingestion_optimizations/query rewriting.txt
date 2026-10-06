@@ -1,0 +1,129 @@
+The second query is more interesting:
+where does he explain getting parameters from the URL?
+
+Our RAG returned:
+Module 13
+OAuth → URL.searchParams
+
+Module 16
+Pixabay → URLSearchParams
+
+These results are technically relevant. They really do discuss getting/using parameters from URLs.
+But suppose what you actually meant was:
+“Where does he explain getting route parameters from an Expo Router URL?”
+
+Then these results are not what you wanted.
+That means retrieval hasn't necessarily failed. The query itself is underspecified.
+We currently send:
+"where does he explain getting parameters from the URL?"
+
+directly into retrieval.
+The retrievers see:
+URL
+parameters
+getting parameters
+
+and correctly find:
+URL.searchParams
+URLSearchParams
+
+They have no reason to magically know you meant:
+Expo Router
+route params
+useLocalSearchParams
+
+This is exactly where query translation starts becoming useful.
+
+
+    Raw user query
+      ↓
+Q   uery Rewriter
+      ↓
+    retrieval-friendly query
+      ↓
+    Hybrid Search
+      ↓
+    RRF
+      ↓
+    Reranker
+      ↓
+    Answer
+
+
+
+    But there is an important danger.
+We should not rewrite:
+getting parameters from URL
+
+into:
+useLocalSearchParams in Expo Router
+
+unless there is enough evidence that's what the user meant.
+Otherwise the rewriter itself starts hallucinating intent.
+So our rewriting prompt should be conservative.
+For example:
+USER:
+"where he gets params from url"
+
+REWRITE:
+"getting URL parameters, route parameters, URL search parameters"
+
+Notice we improve the vocabulary without inventing a framework.
+For:
+"where did he make backend inside expo"
+
+we could rewrite:
+"creating server-side API routes/endpoints in Expo Router"
+
+because backend inside Expo strongly implies that concept.
+
+
+
+Original query
+      │
+      ├──────────────┐
+      ↓              ↓
+ original        rewritten
+ retrieval       retrieval
+      │              │
+      └──────┬───────┘
+             ↓
+            fuse
+
+
+
+
+These rewrites look mostly fine, but they also show why we should keep the original query alongside the rewritten one.
+For:
+useLocalSearchParams
+
+the rewrite:
+"useLocalSearchParams function usage and examples"
+
+is good for semantic retrieval, but the original exact token is still extremely valuable for Elasticsearch. So we should search with both.
+
+
+
+original query
+    │
+    ├── hybridSearch(original)
+    │
+    └── rewriteQuery(original)
+            ↓
+       hybridSearch(rewritten)
+
+both result lists
+    ↓
+RRF / fusion again
+    ↓
+reranker
+    ↓
+group by lecture
+    ↓
+answer
+
+original query
+→ preserves exact wording / technical names
+
+rewritten query
+→ improves vocabulary and semantic coverage

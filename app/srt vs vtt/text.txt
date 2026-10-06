@@ -1,0 +1,15 @@
+srt->
+subtitle number
+timestamp
+text
+
+
+vtt->
+timestamp
+text
++
+optional styling
++
+positioning
++
+metadata

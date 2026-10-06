@@ -1,0 +1,12 @@
+
+Guardrails and PII handling  ✅
+Query rewriting  ✅
+Step-back prompting  ✅
+Query decomposition  ✅
+HyDE  ✅
+
+Query routing and multi-source RAG  ✅
+Parallel retrieval + result fusion  ✅
+Reranking and Top-K selection  ✅
+CRAG / retrieval grading / retry loops  ✅
+Async workers, queues, and scalable RAG processing  

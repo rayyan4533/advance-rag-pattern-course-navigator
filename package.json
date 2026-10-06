@@ -1,0 +1,49 @@
+{
+  "name": "advance-rag-pattern-course-navigator",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test:parser": "tsx scripts/tests/test-lecture-parser.ts",
+    "test:lectures": "tsx scripts/tests/test-load-lectures.ts",
+    "test:chunks": "tsx scripts/tests/test-chunking.ts",
+    "test:documents": "tsx scripts/tests/test-documents.ts",
+    "test:search": "tsx scripts/tests/test-search.ts",
+    "test:rag": "tsx scripts/tests/test-basic-rag.ts",
+    "test:keyword": "tsx scripts/tests/test-keyword-search.ts",
+    "test:hybrid": "tsx scripts/tests/test-hybrid-search.ts",
+    "test:rewrite": "tsx scripts/tests/test-query-rewrite.ts",
+    "test:searchrewrite": "tsx scripts/tests/test-search-with-rewrite.ts",
+    "test:searchwrerwite": "tsx scripts/tests/test-search-with-rewrite.ts",
+    "index:elastic": "tsx scripts/index-elasticsearch.ts"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^9.5.1",
+    "@langchain/core": "^1.2.14",
+    "@langchain/openai": "^1.6.1",
+    "@langchain/qdrant": "^1.0.3",
+    "@qdrant/js-client-rest": "^1.19.0",
+    "bullmq": "^6.3.11",
+    "dotenv": "^18.0.5",
+    "ioredis": "^6.0.0",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  },
+  "packageManager": "pnpm@11.10.0"
+}

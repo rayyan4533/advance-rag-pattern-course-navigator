@@ -1,0 +1,81 @@
+block
+ ↓
+split into lines
+ ↓
+find timestamp line
+ ↓
+split timestamp around -->
+ ↓
+convert both timestamps to seconds
+ ↓
+join remaining lines as text
+
+
+parse-vtt.ts
+= understands subtitles
+
+parse-lecture-metadata.ts
+= understands filenames
+
+parse-lecture.ts
+= builds one lecture
+
+load-lectures.ts
+= loads the whole course
+
+chunk-lecture.ts
+= prepares lecture content for RAG
+
+timestamp.ts
+= time conversion helper
+
+types.ts
+= shared data contracts
+
+
+
+cues: [
+  {
+    start: 10,
+    end: 14,
+    text: "Today we'll learn authentication."
+  },
+  {
+    start: 14,
+    end: 18,
+    text: "First let's understand access tokens."
+  }
+]
+
+
+This is our Basic RAG V1.
+User query
+   ↓
+searchCourse()
+   ↓
+embed query
+   ↓
+Qdrant
+   ↓
+top 5 chunks
+   ↓
+build context prompt
+   ↓
+ChatOpenAI
+   ↓
+lecture + timestamp + summary
+This is our Basic RAG V1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

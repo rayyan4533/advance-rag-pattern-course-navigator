@@ -1,0 +1,53 @@
+User query
+   ↓
+INPUT GUARD
+   ↓
+RAG pipeline
+   ↓
+OUTPUT GUARD
+   ↓
+Final answer
+
+And inside that:
+Input guard
+1. Is this about the course?
+2. Is it trying to override system instructions?
+3. Does it contain secrets/PII we should not propagate?
+
+Output guard
+1. Are cited lectures actually from retrieved context?
+2. Are timestamps from our refined evidence?
+3. Does the answer make unsupported claims?
+4. Did CRAG say retrieval was insufficient?
+
+For example:
+untrusted user input
+→ validate
+
+retrieved transcript
+→ treat as data, not instructions
+
+LLM-generated answer
+→ validate again
+
+
+
+
+
+input guard
+↓
+router
+↓
+retrieval
+↓
+CRAG
+↓
+rerank
+↓
+timestamp refinement
+↓
+generate answer
+↓
+OUTPUT GUARD
+↓
+return answer

@@ -1,0 +1,43 @@
+Suppose decomposition creates:
+2 subqueries
+
+Each subquery goes through:
+original
+rewrite
+step-back
+
+Each of those goes through:
+Qdrant
++
+Elasticsearch
+
+So theoretically:
+2 subqueries
+×
+3 query variants
+×
+2 retrievers
+=
+12 retrieval operations
+
+
+                    User query
+                    ↓
+                    decomposeQuery()
+                    ↓
+                    ┌──────────────────────┐
+                    │ sub-query 1          │
+                    │ sub-query 2          │
+                    │ sub-query 3 ...      │
+                    └──────────┬───────────┘
+                            ↓
+                    for each sub-query:
+                    searchWithQueryTranslations()
+                            ↓
+                        result list
+                            ↓
+                    fuse all result lists
+                            ↓
+                    final candidates
+
+                    

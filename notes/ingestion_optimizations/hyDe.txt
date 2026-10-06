@@ -1,0 +1,54 @@
+HyDE stands for Hypothetical Document Embeddings.
+The generated text gives the embedding model more semantic material to work with.
+For our project, HyDE is useful especially when the user’s wording is vague, informal, or very different from the instructor’s wording.
+
+And also important: HyDE’s generated text is not treated as truth. It is only a retrieval aid. We never show the hypothetical passage as the answer.
+
+So this failed output is actually a very good example of a HyDE failure mode: speculative expansion can poison retrieval if the generated hypothetical document drifts away from the user's intent.
+
+
+                    sub-query
+                    ↓
+                    ┌──────────────┬──────────────┬──────────────┐
+                    ↓              ↓              ↓
+                    original       rewrite        step-back
+                    │              │              │
+                    hybrid         hybrid         hybrid
+                    search         search         search
+                    └──────────────┴──────────────┘
+                            +
+                        HyDE
+                            ↓
+                    Qdrant only
+                            ↓
+                        final fusion
+                            ↓
+                        reranker
+
+
+
+
+                         QUERY
+                          │
+          ┌───────────────┼────────────────┐
+          │               │                │
+          ▼               ▼                ▼
+       Original        Rewrite          Step-back
+          │               │                │
+       Hybrid          Hybrid            Hybrid
+   Qdrant + ES      Qdrant + ES       Qdrant + ES
+          │               │                │
+          └───────────────┼────────────────┘
+                          │
+                          │
+                    HyDE document
+                          │
+                       Qdrant
+                          │
+          ────────────────┴──────────────
+                          ↓
+                         RRF
+                          ↓
+                       candidates
+                          ↓
+                       reranker

@@ -1,0 +1,18 @@
+For your project, the cleanest use case is course indexing. Right now indexing does:
+load lectures
+→ chunk
+→ embed
+→ Qdrant
+→ Elasticsearch
+
+If that runs inside an API request, the request can take a long time or time out.
+With a queue:
+API request
+→ add "index-course" job to queue
+→ respond immediately
+
+worker
+→ picks job
+→ does heavy indexing in background
+
+That’s the key concept: producer → queue → worker.
